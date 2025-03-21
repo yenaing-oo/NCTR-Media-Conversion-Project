@@ -128,9 +128,9 @@ for identifier, dvd_dir, idx in dvd_dirs_to_process:
         # Replace the subprocess.run with Popen to get real-time output
         process = subprocess.Popen(
             [
-                "HandBrakeCLI", "-i", dvd_dir, "-t", str(title_num), "-o", output_file,
-                "-e", "x264", "-q", "20", "-f", "mp4", "--pixel-aspect", "yuv420p",
-                "-E", "aac", "-R", "44.1", "--audio-fallback", "aac",
+            "HandBrakeCLI", "-i", dvd_dir, "-t", str(title_num), "-o", output_file,
+            "-e", "x264", "-q", "15", "-f", "mp4", "--pixel-aspect", "yuv420p",
+            "-E", "aac", "-B", "200", "-R", "44.1", "--audio-fallback", "aac",
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
