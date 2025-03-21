@@ -131,6 +131,7 @@ for identifier, dvd_dir, idx in dvd_dirs_to_process:
             "HandBrakeCLI", "-i", dvd_dir, "-t", str(title_num), "-o", output_file,
             "-e", "x264", "-q", "15", "-f", "mp4", "--pixel-aspect", "yuv420p",
             "-E", "aac", "-B", "200", "-R", "44.1", "--audio-fallback", "aac",
+            "--comb-detect", "--deinterlace"
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
