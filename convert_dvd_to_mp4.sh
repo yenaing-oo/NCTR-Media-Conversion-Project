@@ -69,7 +69,8 @@ for dvd_dir in "${dvd_dirs[@]}"; do
     
     HandBrakeCLI -i "$dvd_dir" -t $title_num -o "$output_file" \
       -e x264 -f mp4 --pixel-aspect yuv420p \
-      -E aac -R 44.1 --audio-fallback aac
+      -E aac -R 44.1 --audio-fallback aac \
+      > /dev/null 2>&1
     
     # Check if conversion was successful
     if [ $? -eq 0 ]; then
