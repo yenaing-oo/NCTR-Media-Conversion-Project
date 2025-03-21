@@ -125,17 +125,45 @@ for identifier, dvd_dir, idx in dvd_dirs_to_process:
         else:
             output_file = os.path.join(dvd_dir, f"{dvd_name}-Title_{title_num}.mp4")
         
-        result = subprocess.run(
+        # Replace the subprocess.run with Popen to get real-time output
+        process = subprocess.Popen(
             [
                 "HandBrakeCLI", "-i", dvd_dir, "-t", str(title_num), "-o", output_file,
                 "-e", "x264", "-q", "20", "-f", "mp4", "--pixel-aspect", "yuv420p",
                 "-E", "aac", "-R", "44.1", "--audio-fallback", "aac",
             ],
-            capture_output=False, text=True
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            universal_newlines=True
         )
         
+        # Read output line by line to capture progress
+        last_progress = 0
+        while True:
+            line = process.stdout.readline()
+            if not line:
+                break
+                
+            # Parse progress information
+            if "Encoding: task" in line and "%" in line:
+                try:
+                    # Extract percentage from the progress line
+                    progress_text = line.strip()
+                    percent = float(progress_text.split('%')[0].split()[-1])
+                    
+                    # Only print when progress changes
+                    if int(percent) > last_progress:
+                        print(f"\rProgress: {int(percent)}%", end="", flush=True)
+                        last_progress = int(percent)
+                except (ValueError, IndexError):
+                    pass
+        
+        # Wait for process to complete
+        process.wait()
+        print()
+        
         # Check if conversion was successful
-        if result.returncode == 0:
+        if process.returncode == 0:
             print(f"Title {title_num} successfully converted to {os.path.basename(output_file)}")
             successful_titles += 1
         else:
