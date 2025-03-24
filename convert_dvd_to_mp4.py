@@ -32,6 +32,19 @@ except Exception as e:
     print(f"Error reading CSV file: {e}")
     sys.exit(1)
 
+# Helper function to write current data to CSV
+def write_csv_data():
+    try:
+        with open(csv_file_path, 'w', newline='') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=csv_data[0].keys(), delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            writer.writeheader()
+            writer.writerows(csv_data)
+        print(f"CSV file updated successfully at {csv_file_path}")
+        return True
+    except Exception as e:
+        print(f"Error updating CSV file: {e}")
+        return False
+
 # Find DVD directories that need processing
 dvd_dirs_to_process = []
 invalid_dvd_dirs = []
@@ -108,6 +121,10 @@ for identifier, dvd_dir, idx in dvd_dirs_to_process:
         # Update CSV data to indicate failure
         csv_data[idx]['Finished'] = 'N'
         csv_data[idx]['Notes'] = 'Failed to determine title count'
+        
+        # Write updated data to CSV after this DVD
+        write_csv_data()
+        
         current_dvd_num += 1
         continue
 
@@ -195,18 +212,11 @@ for identifier, dvd_dir, idx in dvd_dirs_to_process:
 
     print(f"Completed processing DVD: {identifier}. {successful_titles} of {title_count} titles converted.")
     print("="*70)
+    
+    # Write updated data to CSV after each DVD is processed
+    write_csv_data()
 
     # Increment current DVD counter
     current_dvd_num += 1
-
-# Write updated data back to CSV
-try:
-    with open(csv_file_path, 'w', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=csv_data[0].keys(), delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        writer.writeheader()
-        writer.writerows(csv_data)
-    print(f"CSV file updated successfully at {csv_file_path}")
-except Exception as e:
-    print(f"Error updating CSV file: {e}")
 
 print("All DVDs have been processed!")
