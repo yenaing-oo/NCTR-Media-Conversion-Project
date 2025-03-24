@@ -115,6 +115,7 @@ for identifier, dvd_dir, idx in dvd_dirs_to_process:
     print(f"Converting {title_count} titles to MP4...")
     successful_titles = 0
     failed_titles = []
+    corrupted = False
     
     for title_num in range(1, title_count + 1):
         print(f"Processing title {title_num} of {title_count}...")
@@ -144,7 +145,11 @@ for identifier, dvd_dir, idx in dvd_dirs_to_process:
             line = process.stdout.readline()
             if not line:
                 break
-                
+            
+            if "libdvdread: CHECK_VALUE failed" in line:
+                corrupted = True
+                print(f"Error: Title {title_num} of {identifier} may be corrupted. Skipping...")
+
             # Parse progress information
             if "Encoding: task" in line and "%" in line:
                 try:
@@ -179,6 +184,12 @@ for identifier, dvd_dir, idx in dvd_dirs_to_process:
         csv_data[idx]['Notes'] = f"Failed to convert titles: {', '.join(map(str, failed_titles))}"
     else:
         csv_data[idx]['Finished'] = 'Y'
+
+    if corrupted:
+        if csv_data[idx]['Notes']:
+            csv_data[idx]['Notes'] += "; Files may be corrupt"
+        else:
+            csv_data[idx]['Notes'] = "Files may be corrupt"
 
     print(f"Completed processing DVD: {identifier}. {successful_titles} of {title_count} titles converted.")
     print("="*70)
