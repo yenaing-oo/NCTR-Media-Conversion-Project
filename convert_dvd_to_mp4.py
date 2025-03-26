@@ -51,11 +51,12 @@ invalid_dvd_dirs = []
 
 for idx, row in enumerate(csv_data):
     identifier = row['Identifier']
-    finished = str(row['Finished']).strip().upper()
     
     # Skip if already processed
-    if finished.startswith('Y'):
+    if row['Finished']:
         continue
+
+    finished = str(row['Finished']).strip().upper()
     
     # Find the DVD directory based on identifier
     dvd_path = os.path.join(base_dir, identifier)
