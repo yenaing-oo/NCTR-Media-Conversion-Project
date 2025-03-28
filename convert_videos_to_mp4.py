@@ -5,7 +5,7 @@ import csv
 
 # Check if required arguments are provided
 if len(sys.argv) < 3:
-    print("Usage: python script.py /path/to/directory/containing/DVDs /path/to/media/tracking.csv")
+    print("Usage: python script.py /path/to/directory/containing/video/dirs /path/to/media/tracking.csv")
     sys.exit(1)
 
 base_dir = sys.argv[1]
